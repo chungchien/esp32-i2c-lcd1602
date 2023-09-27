@@ -138,8 +138,8 @@
 // COMMAND_SHIFT flags
 #define FLAG_SHIFT_MOVE_DISPLAY          0x08
 #define FLAG_SHIFT_MOVE_CURSOR           0x00
-#define FLAG_SHIFT_MOVE_LEFT             0x04
-#define FLAG_SHIFT_MOVE_RIGHT            0x00
+#define FLAG_SHIFT_MOVE_LEFT             0x00
+#define FLAG_SHIFT_MOVE_RIGHT            0x04
 
 // COMMAND_FUNCTION_SET flags
 #define FLAG_FUNCTION_SET_MODE_8BIT      0x10
@@ -559,7 +559,7 @@ esp_err_t i2c_lcd1602_move_cursor_left(const i2c_lcd1602_info_t * i2c_lcd1602_in
     if (_is_init(i2c_lcd1602_info))
     {
         // RAM is not changed. Shift direction is inverted.
-        err = _write_command(i2c_lcd1602_info, COMMAND_SHIFT | FLAG_SHIFT_MOVE_CURSOR | FLAG_SHIFT_MOVE_RIGHT);
+        err = _write_command(i2c_lcd1602_info, COMMAND_SHIFT | FLAG_SHIFT_MOVE_CURSOR | FLAG_SHIFT_MOVE_LEFT);
     }
     return err;
 }
@@ -570,7 +570,7 @@ esp_err_t i2c_lcd1602_move_cursor_right(const i2c_lcd1602_info_t * i2c_lcd1602_i
     if (_is_init(i2c_lcd1602_info))
     {
         // RAM is not changed. Shift direction is inverted.
-        err = _write_command(i2c_lcd1602_info, COMMAND_SHIFT | FLAG_SHIFT_MOVE_CURSOR | FLAG_SHIFT_MOVE_LEFT);
+        err = _write_command(i2c_lcd1602_info, COMMAND_SHIFT | FLAG_SHIFT_MOVE_CURSOR | FLAG_SHIFT_MOVE_RIGHT);
     }
     return err;
 }
