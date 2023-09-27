@@ -91,7 +91,7 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_system.h"
+#include "rom/ets_sys.h"
 #include "esp_log.h"
 
 #include "i2c-lcd1602.h"
@@ -198,7 +198,8 @@ static esp_err_t _write_to_expander(const i2c_lcd1602_info_t * i2c_lcd1602_info,
 {
     // backlight flag must be included with every write to maintain backlight state
     ESP_LOGD(TAG, "_write_to_expander 0x%02x", data | i2c_lcd1602_info->backlight_flag);
-    return smbus_send_byte(i2c_lcd1602_info->smbus_info, data | i2c_lcd1602_info->backlight_flag);
+    uint8_t tmp = data | i2c_lcd1602_info->backlight_flag;
+    return i2c_master_write_to_device(i2c_lcd1602_info->i2c_num, i2c_lcd1602_info->address, &tmp, 1, 1000 / portTICK_PERIOD_MS);
 }
 
 // IMPORTANT - for the display to stay "in sync" it is important that errors do not interrupt the
@@ -278,13 +279,14 @@ void i2c_lcd1602_free(i2c_lcd1602_info_t ** i2c_lcd1602_info)
     }
 }
 
-esp_err_t i2c_lcd1602_init(i2c_lcd1602_info_t * i2c_lcd1602_info, smbus_info_t * smbus_info,
+esp_err_t i2c_lcd1602_init(i2c_lcd1602_info_t * i2c_lcd1602_info, i2c_port_t i2c_num, uint8_t i2c_address,
                            bool backlight, uint8_t num_rows, uint8_t num_columns, uint8_t num_visible_columns)
 {
     esp_err_t err = ESP_FAIL;
     if (i2c_lcd1602_info != NULL)
     {
-        i2c_lcd1602_info->smbus_info = smbus_info;
+        i2c_lcd1602_info->i2c_num = i2c_num;
+        i2c_lcd1602_info->address = i2c_address;
         i2c_lcd1602_info->backlight_flag = backlight ? FLAG_BACKLIGHT_ON : FLAG_BACKLIGHT_OFF;
         i2c_lcd1602_info->num_rows = num_rows;
         i2c_lcd1602_info->num_columns = num_columns;

@@ -36,7 +36,7 @@
 #define I2C_LCD1602_H
 
 #include <stdbool.h>
-#include "smbus.h"
+#include "driver/i2c.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,7 +48,8 @@ extern "C" {
 typedef struct
 {
     bool init;                                          ///< True if struct has been initialised, otherwise false
-    smbus_info_t * smbus_info;                          ///< Pointer to associated SMBus info
+    i2c_port_t i2c_num;                                 ///< Pointer to associated I2C port
+    uint8_t address;                                    ///< I2C address of the Expender IO
     uint8_t backlight_flag;                             ///< Non-zero if backlight is to be enabled, otherwise zero
     uint8_t num_rows;                                   ///< Number of configured columns
     uint8_t num_columns;                                ///< Number of configured columns, including offscreen columns
@@ -126,14 +127,15 @@ void i2c_lcd1602_free(i2c_lcd1602_info_t ** tsl2561_info);
  * @brief Initialise a I2C-LCD1602 info instance with the specified SMBus information.
  *
  * @param[in] i2c_lcd1602_info Pointer to I2C-LCD1602 info instance.
- * @param[in] smbus_info Pointer to SMBus info instance.
+ * @param[in] i2c_num I2C number used.
+ * @param[in] i2c_address I2C Address
  * @param[in] backlight Initial backlight state.
  * @param[in] num_rows Maximum number of supported rows for this device. Typical values include 2 (1602) or 4 (2004).
  * @param[in] num_columns Maximum number of supported columns for this device. Typical values include 40 (1602, 2004).
  * @param[in] num_visible_columns Number of columns visible at any one time. Typical values include 16 (1602) or 20 (2004).
  * @return ESP_OK if successful, otherwise an error constant.
  */
-esp_err_t i2c_lcd1602_init(i2c_lcd1602_info_t * i2c_lcd1602_info, smbus_info_t * smbus_info,
+esp_err_t i2c_lcd1602_init(i2c_lcd1602_info_t * i2c_lcd1602_info, i2c_port_t i2c_num, uint8_t i2c_address,
                            bool backlight, uint8_t num_rows, uint8_t num_columns, uint8_t num_visible_columns);
 
 /**
